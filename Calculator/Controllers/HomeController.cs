@@ -3,6 +3,7 @@
     using Enums;
     using Models;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
@@ -10,10 +11,13 @@
 
     public class HomeController : Controller
     {
-        ComputationContext db = new ComputationContext();
-
         public ActionResult Index(double? firstNumber, double? secondNumber, string expression)
         {
+            var computations = new List<Computation>();
+            using (var db = new CalculatorContext())
+            {
+                computations.AddRange(db.Computations);
+            }
             if (firstNumber.HasValue && secondNumber.HasValue)
             {
                 OperationType type;
@@ -28,7 +32,7 @@
                         if (secondNumber.Value == 0)
                         {
                             this.ViewBag.Result = "Error";
-                            return this.View();
+                            return this.View(computations);
                         }
 
                         type = OperationType.Divide;
@@ -44,31 +48,30 @@
                         break;
                     default:
                         this.ViewBag.Result = "Error";
-                        return this.View();
+                        return this.View(computations);
                 }
 
                 var host = Dns.GetHostEntry(Dns.GetHostName());
                 var ip = host.AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork)?.ToString();
 
-                var computation = new Computation
+                using (var db = new CalculatorContext())
                 {
-                    Date = DateTime.Now,
-                    Ip = ip,
-                    Operation = type,
-                    Result = result
-                };
+                    var computation = new Computation
+                    {
+                        Date = DateTime.Now,
+                        Ip = ip,
+                        Operation = type,
+                        Result = result
+                    };
 
-                db.Calculating.Add(computation);
-                db.SaveChanges();
+                    db.Computations.Add(computation);
+                    db.SaveChanges();
+                }
 
-
-                this.ViewBag.firstNumber = firstNumber.ToString();
-                this.ViewBag.secondNumber = secondNumber.ToString();
-                this.ViewBag.expression = expression;
-                this.ViewBag.Result = result;
+                return RedirectToAction("Index");
             }
 
-            return this.View();
+            return this.View(computations);
         }
     }
 }

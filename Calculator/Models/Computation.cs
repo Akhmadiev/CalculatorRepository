@@ -10,6 +10,11 @@ namespace Calculator.Models
     public class Computation
     {
         /// <summary>
+        /// Идентификатор
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Дата
         /// </summary>
         public DateTime Date { get; set; }
@@ -30,8 +35,8 @@ namespace Calculator.Models
         public double Result { get; set; }
     }
 
-    public class ComputationContext : DbContext
+    public class CalculatorContext : DbContext
     {
-        public DbSet<Computation> Calculating { get; set; }
+        public DbSet<Computation> Computations { get; set; }
     }
 }

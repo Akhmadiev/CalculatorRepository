@@ -25,5 +25,33 @@
                 Result: <span>@ViewBag.Result</span>
             </div>
         </form>
-    </div>
+
+        <table class="content">
+            <tr>
+                <td>
+                    <p>IP</p>
+                </td>
+                <td>
+                    <p>|</p>
+                </td>
+                <td>
+                    <p>Результат</p>
+                </td>
+            </tr>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>
+                        <p>@row.Ip</p>
+                    </td>
+                    <td>
+                        <p>|</p>
+                    </td>
+                    <td>
+                        <p>@row.Result</p>
+                    </td>
+                </tr>
+            }
+        </table>
+</div>
 </div>
